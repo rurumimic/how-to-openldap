@@ -9,7 +9,7 @@
 
 ---
 
-## Architecture
+## Cases: 경우의 수
 
 ### Provider & Consumer
 
@@ -27,19 +27,17 @@
 1. Syncrepl: 객체 기반 복제
    - refreshOnly: 폴링
    - refreshAndPersist: 리스닝
-2. Delta-syncrepl: 변경로그 기반 복제
+2. **Delta-syncrepl**: 변경로그 기반 복제
 
-### MirrorMode & Delta-syncrepl
+### Security
 
-## Security
-
-### TLS
+#### TLS
 
 X.509 인증서를 이용해 LDAP 서버와 보안 통신한다.
 
 SASL EXTERNAL 매커니즘을 사용한다.
 
-### SASL
+#### SASL
 
 RFC 4422: [Simple Authentication and Security Layer](https://tools.ietf.org/html/rfc4422)
 
@@ -48,6 +46,26 @@ SASL GSSAPI 매커니즘으로 Kerberos V를 사용한다.
 TLS 통신이나 `ldapi:///` 유닉스 도메인 소켓 통신을 할 때는 EXTERNAL 매커니즘을 사용한다.
 
 나머지 매커니즘은 고려하지 않는다.
+
+---
+
+## Architecture 1
+
+- MirrorMode
+- Delta-syncrepl
+- TLS
+
+Go to [LDAP Service Architecture Design](src)
+
+---
+
+## Architecture 2
+
+- MirrorMode
+- Delta-syncrepl
+- SASL GSSAPI
+
+작성 중: How to LDAP with Kerberos V
 
 ---
 
