@@ -46,29 +46,108 @@ vagrant halt
 각 서버 `/etc/hosts`마다 전체 주소 도메인 네임(**FQDN**)을 등록한다.  
 FQDN이 LDAP 설정값과 일치하지 않으면 LDAP 서버를 실행할 수 없다.
 
+예를 들어, ldap1 서버에서 `/etc/hosts`를 고친다.
+
 ```bash
-cat > /etc/hosts << EOF
+127.0.0.1        ldap1.example.com        ldap1
 192.168.9.101    ldap1.example.com        ldap1
 192.168.9.102    ldap2.example.com        ldap2
-192.168.9.103    consumer.example.com    client
-EOF
+192.168.9.103    consumer.example.com     consumer
 ```
 
 호스트 네임을 확인한다.
 
 ```bash
 # 호스트 네임 확인 명령
-hostname -f
+hostname # ldap1
+hostname -f # ldap1.example.com
 # 호스트 네임 변경 명령
 hostnamectl set-hostname ldap1
 ```
+
+나머지 서버들도 `/etc/hosts`를 설정한다.
 
 ### 패키지 설치
 
 OpenLDAP 라이브러리, 서버, 클라이언트를 설치한다.
 
 ```bash
-yum install -y openldap openldap-servers openldap-clients;
+yum install -y openldap openldap-servers openldap-clients
+```
+
+### 기존 설정 제거
+
+패키지에 자동으로 설정된 slapd 설정을 제거한다.
+
+```bash
+rm -rf /etc/openldap/slapd.d
+mkdir /etc/openldap/slapd.d
+```
+
+### 데이터베이스 디렉터리 생성
+
+slapd가 사용할 데이터베이스 저장 경로를 생성한다.
+
+```bash
+mkdir /var/lib/ldap/data /var/lib/ldap/accesslog
+chown ldap:ldap /var/lib/ldap/data /var/lib/ldap/accesslog
+```
+
+slapd 데이터베이스 저장 경로의 SELinux 보안 정보를 확인한다.
+
+```bash
+ls -ldZ /var/lib/ldap
+# drwx------. ldap ldap system_u:object_r:slapd_db_t:s0  /var/lib/ldap
+```
+
+### 로그 설정
+
+slapd 로그 디렉터리를 생성한다.
+
+```bash
+mkdir /var/log/slapd
+```
+
+#### [rsyslog](https://www.rsyslog.com/category/guides-for-rsyslog/) 설정
+
+slapd의 로그를 수집한다.
+
+```bash
+cat > /etc/rsyslog.d/slapd.conf << EOF
+$template slapdtmpl,"[%$DAY%-%$MONTH%-%$YEAR% %timegenerated:12:19:date-rfc3339%] %app-name% %syslogseverity-text% %msg%\n"
+local4.*    /var/log/slapd/slapd.log;slapdtmpl
+EOF
+```
+
+rsyslog를 재시작한다.
+
+```bash
+systemctl restart rsyslog
+```
+
+#### [logrotate](https://linux.die.net/man/8/logrotate) 설정
+
+rsyslog가 생성한 로그를 백업한다.
+
+```bash
+cat > /etc/logrotate.d/slapd << EOF
+/var/log/slapd/slapd.log {
+    compress
+    create 0644 root root
+    daily
+    dateformat
+    notifempty
+    maxage 31
+    missingok
+    rotate 31
+}
+EOF
+```
+
+logrotate를 강제 실행한다.
+
+```bash
+/usr/sbin/logrotate -f /etc/logrotate.conf
 ```
 
 ---
@@ -198,12 +277,20 @@ openssl req -new -key replicator.key -config replicator.csr.conf -out replicator
 openssl x509 -req -in replicator.csr -CAcreateserial -CA rootca.crt -CAkey rootca.key -out replicator.crt
 ```
 
+### 결과 파일
+
+- `rootca.crt`, `rootca.csr`, `rootca.csr.conf`, `rootca.key`, `rootca.srl`
+- `example.com.crt`, `example.com.csr`, `example.com.csr.conf`, `example.com.key`
+- `replicator.crt`, `replicator.csr`, `replicator.csr.conf`, `replicator.key`
+
 ### 인증서 전달
+
+LDAP 서버마다 `/etc/openldap/certs/` 경로에 `rootca.crt`, `example.com.crt`, `example.com.key`, `replicator.crt`, `replicator.key`를 복제한다.
 
 **기존 파일 삭제**
 
 ```bash
-rm /etc/openldap/certs/*
+rm -f /etc/openldap/certs/*
 ```
 
 **인증서 파일 저장**
@@ -253,84 +340,6 @@ TLS_REQCERT allow
 
 ---
 
-## Provider 공통 설정
-
-### 기존 설정 제거
-
-패키지에 자동으로 설정된 slapd 설정을 제거한다.
-
-```bash
-rm -rf /etc/openldap/slapd.d
-mkdir /etc/openldap/slapd.d
-```
-
-### 데이터베이스 디렉터리 생성
-
-slapd가 사용할 데이터베이스 저장 경로를 생성한다.
-
-```bash
-mkdir /var/lib/ldap/data /var/lib/ldap/accesslog
-chown ldap:ldap /var/lib/ldap/data /var/lib/ldap/accesslog
-```
-
-slapd 데이터베이스 저장 경로의 SELinux 보안 정보를 확인한다.
-
-```bash
-ls -ldZ /var/lib/ldap
-```
-
-### 로그 설정
-
-slapd 로그 디렉터리를 생성한다.
-
-```bash
-mkdir /var/log/slapd
-```
-
-#### [rsyslog](https://www.rsyslog.com/category/guides-for-rsyslog/) 설정
-
-slapd의 로그를 수집한다.
-
-```bash
-cat > /etc/rsyslog.d/slapd.conf << EOF
-$template slapdtmpl,"[%$DAY%-%$MONTH%-%$YEAR% %timegenerated:12:19:date-rfc3339%] %app-name% %syslogseverity-text% %msg%\n"
-local4.*    /var/log/slapd/slapd.log;slapdtmpl
-EOF
-```
-
-rsyslog를 재시작한다.
-
-```bash
-systemctl restart rsyslog
-```
-
-#### [logrotate](https://linux.die.net/man/8/logrotate) 설정
-
-rsyslog가 생성한 로그를 백업한다.
-
-```bash
-cat > /etc/logrotate.d/slapd << EOF
-/var/log/slapd/slapd.log {
-    compress
-    create 0644 root root
-    daily
-    dateformat
-    notifempty
-    maxage 31
-    missingok
-    rotate 31
-}
-EOF
-```
-
-logrotate를 강제 실행한다.
-
-```bash
-/usr/sbin/logrotate -d /etc/logrotate.conf
-```
-
----
-
 ## Provder 1 서버 설정
 
 ### 관리자 비밀번호 생성
@@ -343,7 +352,7 @@ python -c 'import sys, crypt; print("{CRYPT}" + crypt.crypt(sys.argv[1], crypt.m
 
 비밀번호를 기록한다.
 
-`{CRYPT}$5$sHDQtlifSA.yjEzN$43PybXWc5gaZCFpXvqlHSJdy8mEQHLAg.Sp3.zrEQj1`
+`{CRYPT}$5$MTyIW7Nq/1hpAbav$dzp/GM6XreRoU0m7t4iphosNt7ltyOj6Uktg3W4DbbC`
 
 ### LDIF 작성
 
@@ -356,7 +365,32 @@ python -c 'import sys, crypt; print("{CRYPT}" + crypt.crypt(sys.argv[1], crypt.m
 slapd 설정을 적용한다.
 
 ```bash
-slapadd -v -F /etc/openldap/slapd.d -n 0 -l slapd.ldif
+slapadd -v -F /etc/openldap/slapd.d -n 0 -l slapd1.ldif
+```
+
+다음처럼 100.00%이라고 결과가 나타나면 설정이 잘 된 것이다.
+
+```bash
+added: "cn=config" (00000001)
+added: "cn=module{0},cn=config" (00000001)
+added: "cn=schema,cn=config" (00000001)
+added: "cn={0}core,cn=schema,cn=config" (00000001)
+added: "cn={1}cosine,cn=schema,cn=config" (00000001)
+added: "cn={2}nis,cn=schema,cn=config" (00000001)
+added: "cn={3}inetorgperson,cn=schema,cn=config" (00000001)
+added: "cn={4}openldap,cn=schema,cn=config" (00000001)
+added: "olcDatabase={-1}frontend,cn=config" (00000001)
+added: "olcDatabase={0}config,cn=config" (00000001)
+added: "olcDatabase={1}monitor,cn=config" (00000001)
+added: "olcDatabase={2}mdb,cn=config" (00000001)
+added: "olcOverlay={0}syncprov,olcDatabase={2}mdb,cn=config" (00000001)
+added: "olcDatabase={3}mdb,cn=config" (00000001)
+added: "olcOverlay={0}syncprov,olcDatabase={3}mdb,cn=config" (00000001)
+added: "olcOverlay={1}accesslog,olcDatabase={3}mdb,cn=config" (00000001)
+added: "olcOverlay={2}memberof,olcDatabase={3}mdb,cn=config" (00000001)
+added: "olcOverlay={3}refint,olcDatabase={3}mdb,cn=config" (00000001)
+_#################### 100.00% eta   none elapsed            none fast!         
+Closing DB...
 ```
 
 slapd 설정 디렉터리 권한을 변경한다.
@@ -372,8 +406,42 @@ slapd 서버를 생성한다.
 ```bash
 systemctl start slapd
 systemctl enable slapd
+```
+
+slapd 상태를 확인한다.
+
+```bash
 systemctl status slapd.service -l
 ```
+
+```bash
+● slapd.service - OpenLDAP Server Daemon
+   Loaded: loaded (/usr/lib/systemd/system/slapd.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2020-01-23 13:54:36 UTC; 8s ago
+     Docs: man:slapd
+           man:slapd-config
+           man:slapd-hdb
+           man:slapd-mdb
+           file:///usr/share/doc/openldap-servers/guide.html
+  Process: 4226 ExecStart=/usr/sbin/slapd -u ldap -h ${SLAPD_URLS} $SLAPD_OPTIONS (code=exited, status=0/SUCCESS)
+  Process: 4213 ExecStartPre=/usr/libexec/openldap/check-config.sh (code=exited, status=0/SUCCESS)
+ Main PID: 4228 (slapd)
+   CGroup: /system.slice/slapd.service
+           └─4228 /usr/sbin/slapd -u ldap -h ldapi:/// ldap:///
+
+Jan 23 13:54:36 ldap1 systemd[1]: Starting OpenLDAP Server Daemon...
+Jan 23 13:54:36 ldap1 runuser[4216]: pam_unix(runuser:session): session opened for user ldap by (uid=0)
+Jan 23 13:54:36 ldap1 slapd[4226]: @(#) $OpenLDAP: slapd 2.4.44 (Jan 29 2019 17:42:45) $
+                                           mockbuild@x86-01.bsys.centos.org:/builddir/build/BUILD/openldap-2.4.44/openldap-2.4.44/servers/slapd
+Jan 23 13:54:36 ldap1 slapd[4228]: slapd starting
+Jan 23 13:54:36 ldap1 systemd[1]: Started OpenLDAP Server Daemon.
+Jan 23 13:54:39 ldap1 slapd[4228]: slap_client_connect: URI=ldap://ldap2.example.com:389 Warning, ldap_start_tls failed (-1)
+Jan 23 13:54:42 ldap1 slapd[4228]: slap_client_connect: URI=ldap://ldap2.example.com:389 ldap_sasl_interactive_bind_s failed (-1)
+Jan 23 13:54:42 ldap1 slapd[4228]: do_syncrepl: rid=001 rc -1 retrying (4 retries left)
+```
+
+`slap_client_connect: URI=ldap://ldap2.example.com:389 Warning, ldap_start_tls failed (-1)`:  
+아직은 ldap2 서버에 연결을 하지 못한다.
 
 ### 디렉터리 정보 초기화
 
@@ -381,13 +449,57 @@ bind DN를 LDAP 관리자 DN으로 설정하고, StartTLS으로 요청한다.
 
 ```bash
 ldapadd -x -W -D "cn=manager,ou=admins,dc=example,dc=com" -f directories.ldif -Z
-# 관리자 비밀번호 입력
+```
+
+```bash
+Enter LDAP Password: # 관리자 비밀번호 입력
+adding new entry "dc=example,dc=com"
+adding new entry "ou=admins,dc=example,dc=com"
+adding new entry "cn=manager,ou=admins,dc=example,dc=com"
+adding new entry "cn=replicator,ou=admins,dc=example,dc=com"
+adding new entry "ou=people,dc=example,dc=com"
+adding new entry "ou=group,dc=example,dc=com"
 ```
 
 #### 디렉터리 정보 확인
 
 ```bash
 ldapsearch -x -W -H ldap://ldap1.example.com -D "cn=manager,ou=admins,dc=example,dc=com" objectClass=* -b dc=example,dc=com -Z
+```
+
+```bash
+# example.com
+dn: dc=example,dc=com
+dc: example
+objectClass: top
+objectClass: domain
+
+# admins, example.com
+dn: ou=admins,dc=example,dc=com
+objectClass: organizationalUnit
+ou: admins
+
+# manager, admins, example.com
+dn: cn=manager,ou=admins,dc=example,dc=com
+objectClass: organizationalRole
+cn: manager
+description: LDAP Manager
+
+# replicator, admins, example.com
+dn: cn=replicator,ou=admins,dc=example,dc=com
+objectClass: organizationalRole
+cn: replicator
+description: Replicator
+
+# people, example.com
+dn: ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: people
+
+# group, example.com
+dn: ou=group,dc=example,dc=com
+objectClass: organizationalUnit
+ou: group
 ```
 
 ---
@@ -400,10 +512,10 @@ ldapsearch -x -W -H ldap://ldap1.example.com -D "cn=manager,ou=admins,dc=example
 
 ### 설정 적용
 
-slapd 설정을 적용한다.
+slapd 설정을 적용한다. 100.00%이라고 결과가 나타나면 설정이 잘 된 것이다.
 
 ```bash
-slapadd -v -F /etc/openldap/slapd.d -n 0 -l slapd.ldif
+slapadd -v -F /etc/openldap/slapd.d -n 0 -l slapd2.ldif
 ```
 
 slapd 설정 디렉터리 권한을 변경한다.
@@ -461,11 +573,34 @@ loginShell: /bin/bash
 EOF
 ```
 
+```bash
+Enter LDAP Password: # 관리자 비밀번호 입력
+adding new entry "cn=Keanu Reeves,ou=people,dc=example,dc=com"
+```
+
 ldap1 서버에서 확인한다.
 
 ```bash
-ldapsearch -x -W -D "cn=manager,ou=admins,dc=example,dc=com" uid=keanu -b dc=example,dc=com -Z;
+ldapsearch -x -W -D "cn=manager,ou=admins,dc=example,dc=com" uid=keanu -b dc=example,dc=com -Z
 ```
+
+```bash
+# Keanu Reeves, people, example.com
+dn: cn=Keanu Reeves,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: posixAccount
+objectClass: inetOrgPerson
+cn: Keanu Reeves
+uid: keanu
+sn: Reeves
+givenName: Keanu
+uidNumber: 1001
+gidNumber: 500
+homeDirectory: /home/users/keanu
+loginShell: /bin/bash
+```
+
+Provider 2개로 MirrorMode 설정을 완료했다.
 
 ---
 
@@ -483,6 +618,12 @@ yum install -y phpldapadmin
 ```bash
 vi /etc/phpldapadmin/config.php
 ```
+
+VI 줄 이동 단축키: `ESC` + `:숫자`
+
+- 298: `$servers->setValue('server','host','ldap://ldap1.example.com')`
+- 340: `$servers->setValue('server','tls',true)`
+- 397: `$servers->setValue('login','attr','dn')`
 
 ### httpd 설정
 
@@ -512,6 +653,13 @@ systemctl start httpd
 systemctl enable httpd
 systemctl status httpd
 ```
+
+### phpLDAPadmin 접속
+
+브라우저로 [192.168.9.101/phpldapadmin](http://192.168.9.101/phpldapadmin)에 접속한다.
+
+- User Name: `cn=manager,ou=admins,dc=example,dc=com`
+- Password: 관리자 비밀번호
 
 ---
 
@@ -553,14 +701,22 @@ ldapsearch -x -W -D "cn=manager,ou=admins,dc=example,dc=com" uid=keanu -b dc=exa
 
 ### LDAP 서버 설정 백업
 
+`olcServerID`가 다른 백업 파일을 사용하면 slapd는 실행되지 않는다.  
+
 ```bash
-slapcat -b cn=config > config.ldif
+slapcat -n 0 -l config.ldif
+```
+
+### Accesslog 데이터 백업
+
+```bash
+slapcat -n 2 -l accesslog.ldif
 ```
 
 ### 디렉터리 데이터 백업
 
 ```bash
-slapcat -b dc=example,dc=com > example.com.ldif
+slapcat -n 3 -l example.com.ldif
 ```
 
 ### LDAP 서버 종료
@@ -579,21 +735,33 @@ mkdir /etc/openldap/slapd.d
 ### 기존 디렉터리 데이터 삭제
 
 ```bash
-rm /var/lib/ldap/data/data.mdb /var/lib/ldap/data/lock.mdb
-rm /var/lib/ldap/accesslog/data.mdb /var/lib/ldap/accesslog/lock.mdb
+rm -f /var/lib/ldap/accesslog/{data.mdb,lock.mdb} /var/lib/ldap/data/{data.mdb,lock.mdb}
 ```
 
 ### LDAP 설정 등록
 
+`olcServerID`가 다른 백업 파일을 사용하면 slapd는 실행되지 않는다.  
+
 ```bash
-slapadd -v -F /etc/openldap/slapd.d -b cn=config -l  config.ldif
+slapadd -n 0 -F /etc/openldap/slapd.d -l config.ldif
 chown -R ldap:ldap /etc/openldap/slapd.d
+```
+
+### Accesslog 데이터 등록
+
+옵션 `-w`: write syncrepl context information. After all entries are added, the contextCSN will be updated with the greatest CSN in the database.
+
+```bash
+slapadd -n 2 -F /etc/openldap/slapd.d -l accesslog.ldif
+chown -R ldap:ldap /var/lib/ldap
 ```
 
 ### 디렉터리 데이터 등록
 
+옵션 `-w`: write syncrepl context information. After all entries are added, the contextCSN will be updated with the greatest CSN in the database.
+
 ```bash
-slapadd -b dc=example,dc=com -l example.com.ldif
+slapadd -n 3 -F /etc/openldap/slapd.d -l example.com.ldif
 chown -R ldap:ldap /var/lib/ldap
 ```
 
