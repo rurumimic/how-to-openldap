@@ -1,0 +1,108 @@
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcArgsFile: /var/run/openldap/slapd.args
+olcPidFile: /var/run/openldap/slapd.pid
+olcTLSCACertificateFile: /etc/openldap/certs/rootca.crt
+olcTLSCertificateFile: /etc/openldap/certs/example.com.crt
+olcTLSCertificateKeyFile: /etc/openldap/certs/example.com.key
+olcTLSVerifyClient: allow
+olcLogLevel: stats
+olcPasswordCryptSaltFormat: $5$%.16s
+olcAuthzRegexp: cn=replicator cn=replicator,ou=admins,dc=example,dc=com
+
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
+olcModulepath: /usr/lib64/openldap
+olcModuleload: pw-sha2.la
+
+dn: cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: schema
+
+include: file:///etc/openldap/schema/core.ldif
+include: file:///etc/openldap/schema/cosine.ldif
+include: file:///etc/openldap/schema/nis.ldif
+include: file:///etc/openldap/schema/inetorgperson.ldif
+include: file:///etc/openldap/schema/openldap.ldif
+
+dn: olcDatabase=frontend,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcFrontendConfig
+olcDatabase: frontend
+olcAccess: to *
+  by dn.base="cn=replicator,ou=admins,dc=example,dc=com" read
+  by * read
+olcPasswordHash: {CRYPT}
+
+dn: olcDatabase=config,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: config
+olcAccess: to *
+  by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage
+  by dn.base="cn=replicator,ou=admins,dc=example,dc=com" read
+  by * none
+
+dn: olcDatabase=monitor,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: monitor
+olcAccess: to *
+  by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" read
+  by dn.base="dc=example,dc=com" read
+  by dn.base="cn=replicator,ou=admins,dc=example,dc=com" read
+  by * none
+
+dn: olcDatabase=mdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: mdb
+olcSuffix: dc=example,dc=com
+olcRootDN: cn=manager,ou=admins,dc=example,dc=com
+olcDbDirectory: /var/lib/ldap/data
+olcDbIndex: entryUUID eq
+olcRootPW: {CRYPT}$5$MTyIW7Nq/1hpAbav$dzp/GM6XreRoU0m7t4iphosNt7ltyOj6Uktg3W4DbbC
+olcLimits: dn.exact="cn=replicator,ou=admins,dc=example,dc=com" time.soft=unlimited time.hard=unlimited size.soft=unlimited size.hard=unlimited
+olcAccess: to *
+  by dn.base="cn=replicator,ou=admins,dc=example,dc=com" read
+  by dn.children="ou=people,dc=example,dc=com" read
+  by * none
+olcSyncrepl: rid=001
+  provider="ldap://ldap1.example.com:389"
+  type=refreshAndPersist
+  retry="30 5 300 3"
+  interval=00:00:05:00
+  logbase="cn=accesslog"
+  logfilter="(&(objectClass=auditWriteObject)(reqResult=0))"
+  syncdata=accesslog
+  searchbase="dc=example,dc=com"
+  attrs="cn,givenName"
+  schemachecking=off
+  bindmethod=sasl
+  saslmech=EXTERNAL
+  tls_cert=/etc/openldap/certs/replicator.crt
+  tls_key=/etc/openldap/certs/replicator.key
+  tls_cacert=/etc/openldap/certs/rootca.crt
+  tls_reqcert=demand
+  starttls=yes
+olcSyncrepl: rid=002
+  provider="ldap://ldap2.example.com:389"
+  type=refreshAndPersist
+  retry="30 5 300 3"
+  interval=00:00:05:00
+  logbase="cn=accesslog"
+  logfilter="(&(objectClass=auditWriteObject)(reqResult=0))"
+  syncdata=accesslog
+  searchbase="dc=example,dc=com"
+  attrs="cn,givenName"
+  schemachecking=off
+  bindmethod=sasl
+  saslmech=EXTERNAL
+  tls_cert=/etc/openldap/certs/replicator.crt
+  tls_key=/etc/openldap/certs/replicator.key
+  tls_cacert=/etc/openldap/certs/rootca.crt
+  tls_reqcert=demand
+  starttls=yes
+olcUpdateRef: ldap://ldap1.example.com
+olcUpdateRef: ldap://ldap2.example.com
+olcSecurity: tls=1

@@ -1,5 +1,67 @@
 # LDAP Service Architecture Design
 
+- [LDAP Service Architecture Design](#ldap-service-architecture-design)
+  - [Servers](#servers)
+  - [Vagrant](#vagrant)
+  - [공통 설정](#%ea%b3%b5%ed%86%b5-%ec%84%a4%ec%a0%95)
+    - [Hosts 설정](#hosts-%ec%84%a4%ec%a0%95)
+    - [패키지 설치](#%ed%8c%a8%ed%82%a4%ec%a7%80-%ec%84%a4%ec%b9%98)
+    - [기존 설정 제거](#%ea%b8%b0%ec%a1%b4-%ec%84%a4%ec%a0%95-%ec%a0%9c%ea%b1%b0)
+    - [데이터베이스 디렉터리 생성](#%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%b2%a0%ec%9d%b4%ec%8a%a4-%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%ec%83%9d%ec%84%b1)
+    - [로그 설정](#%eb%a1%9c%ea%b7%b8-%ec%84%a4%ec%a0%95)
+      - [rsyslog 설정](#rsyslog-%ec%84%a4%ec%a0%95)
+      - [logrotate 설정](#logrotate-%ec%84%a4%ec%a0%95)
+  - [인증서](#%ec%9d%b8%ec%a6%9d%ec%84%9c)
+    - [RootCA 인증서](#rootca-%ec%9d%b8%ec%a6%9d%ec%84%9c)
+    - [LDAP Provider 인증서](#ldap-provider-%ec%9d%b8%ec%a6%9d%ec%84%9c)
+    - [Replicator 인증서](#replicator-%ec%9d%b8%ec%a6%9d%ec%84%9c)
+    - [결과 파일](#%ea%b2%b0%ea%b3%bc-%ed%8c%8c%ec%9d%bc)
+    - [인증서 전달](#%ec%9d%b8%ec%a6%9d%ec%84%9c-%ec%a0%84%eb%8b%ac)
+  - [클라이언트 설정](#%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%84%a4%ec%a0%95)
+    - [설정 방법 3가지](#%ec%84%a4%ec%a0%95-%eb%b0%a9%eb%b2%95-3%ea%b0%80%ec%a7%80)
+      - [`/etc/openldap/ldap.conf`: TLS_CACERT](#etcopenldapldapconf-tlscacert)
+      - [`/etc/openldap/ldap.conf`: TLS_REQCERT](#etcopenldapldapconf-tlsreqcert)
+      - [`~/.ldaprc`: TLS_REQCERT](#ldaprc-tlsreqcert)
+  - [Provder 1 서버 설정](#provder-1-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
+    - [관리자 비밀번호 생성](#%ea%b4%80%eb%a6%ac%ec%9e%90-%eb%b9%84%eb%b0%80%eb%b2%88%ed%98%b8-%ec%83%9d%ec%84%b1)
+    - [LDIF 작성](#ldif-%ec%9e%91%ec%84%b1)
+    - [설정 적용](#%ec%84%a4%ec%a0%95-%ec%a0%81%ec%9a%a9)
+    - [서버 실행](#%ec%84%9c%eb%b2%84-%ec%8b%a4%ed%96%89)
+    - [디렉터리 정보 초기화](#%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%ec%a0%95%eb%b3%b4-%ec%b4%88%ea%b8%b0%ed%99%94)
+      - [디렉터리 정보 확인](#%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%ec%a0%95%eb%b3%b4-%ed%99%95%ec%9d%b8)
+  - [Provider 2 서버 설정](#provider-2-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
+    - [LDIF 작성](#ldif-%ec%9e%91%ec%84%b1-1)
+    - [설정 적용](#%ec%84%a4%ec%a0%95-%ec%a0%81%ec%9a%a9-1)
+    - [서버 실행](#%ec%84%9c%eb%b2%84-%ec%8b%a4%ed%96%89-1)
+    - [디렉터리 정보 확인](#%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%ec%a0%95%eb%b3%b4-%ed%99%95%ec%9d%b8-1)
+  - [LDAP 디렉터리 정보 추가](#ldap-%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%ec%a0%95%eb%b3%b4-%ec%b6%94%ea%b0%80)
+  - [phpLDAPadmin](#phpldapadmin)
+    - [패키지 설치](#%ed%8c%a8%ed%82%a4%ec%a7%80-%ec%84%a4%ec%b9%98-1)
+    - [phpldapadmin 설정](#phpldapadmin-%ec%84%a4%ec%a0%95)
+    - [httpd 설정](#httpd-%ec%84%a4%ec%a0%95)
+    - [필요없는 계정 삭제](#%ed%95%84%ec%9a%94%ec%97%86%eb%8a%94-%ea%b3%84%ec%a0%95-%ec%82%ad%ec%a0%9c)
+    - [httpd 실행](#httpd-%ec%8b%a4%ed%96%89)
+    - [phpLDAPadmin 접속](#phpldapadmin-%ec%a0%91%ec%86%8d)
+  - [LDAP 데이터 확인 방법](#ldap-%eb%8d%b0%ec%9d%b4%ed%84%b0-%ed%99%95%ec%9d%b8-%eb%b0%a9%eb%b2%95)
+  - [백업](#%eb%b0%b1%ec%97%85)
+    - [LDAP 서버 설정 백업](#ldap-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95-%eb%b0%b1%ec%97%85)
+    - [Accesslog 데이터 백업](#accesslog-%eb%8d%b0%ec%9d%b4%ed%84%b0-%eb%b0%b1%ec%97%85)
+    - [디렉터리 데이터 백업](#%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%eb%8d%b0%ec%9d%b4%ed%84%b0-%eb%b0%b1%ec%97%85)
+    - [LDAP 서버 종료](#ldap-%ec%84%9c%eb%b2%84-%ec%a2%85%eb%a3%8c)
+    - [기존 서버 설정 삭제](#%ea%b8%b0%ec%a1%b4-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95-%ec%82%ad%ec%a0%9c)
+    - [기존 디렉터리 데이터 삭제](#%ea%b8%b0%ec%a1%b4-%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%eb%8d%b0%ec%9d%b4%ed%84%b0-%ec%82%ad%ec%a0%9c)
+    - [LDAP 설정 등록](#ldap-%ec%84%a4%ec%a0%95-%eb%93%b1%eb%a1%9d)
+    - [Accesslog 데이터 등록](#accesslog-%eb%8d%b0%ec%9d%b4%ed%84%b0-%eb%93%b1%eb%a1%9d)
+    - [디렉터리 데이터 등록](#%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%eb%8d%b0%ec%9d%b4%ed%84%b0-%eb%93%b1%eb%a1%9d)
+    - [LDAP 서버 실행](#ldap-%ec%84%9c%eb%b2%84-%ec%8b%a4%ed%96%89)
+  - [Consumer 서버 설정](#consumer-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
+    - [LDIF 작성](#ldif-%ec%9e%91%ec%84%b1-2)
+    - [설정 적용](#%ec%84%a4%ec%a0%95-%ec%a0%81%ec%9a%a9-2)
+    - [서버 실행](#%ec%84%9c%eb%b2%84-%ec%8b%a4%ed%96%89-2)
+    - [디렉터리 정보 확인](#%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%ec%a0%95%eb%b3%b4-%ed%99%95%ec%9d%b8-2)
+
+---
+
 ## Servers
 
 | Role | Domain | IP |
@@ -775,3 +837,96 @@ systemctl start slapd
 
 ## Consumer 서버 설정
 
+### LDIF 작성
+
+서버 설정 LDIF: [consumer.ldif](consumer.ldif)
+
+### 설정 적용
+
+slapd 설정을 적용한다.
+
+```bash
+slapadd -v -F /etc/openldap/slapd.d -n 0 -l consumer.ldif
+```
+
+100.00%이라고 결과가 나타나면 설정이 잘 된 것이다.
+
+```bash
+added: "cn=config" (00000001)
+added: "cn=module{0},cn=config" (00000001)
+added: "cn=schema,cn=config" (00000001)
+added: "cn={0}core,cn=schema,cn=config" (00000001)
+added: "cn={1}cosine,cn=schema,cn=config" (00000001)
+added: "cn={2}nis,cn=schema,cn=config" (00000001)
+added: "cn={3}inetorgperson,cn=schema,cn=config" (00000001)
+added: "cn={4}openldap,cn=schema,cn=config" (00000001)
+added: "olcDatabase={-1}frontend,cn=config" (00000001)
+added: "olcDatabase={0}config,cn=config" (00000001)
+added: "olcDatabase={1}monitor,cn=config" (00000001)
+added: "olcDatabase={2}mdb,cn=config" (00000001)
+_#################### 100.00% eta   none elapsed            none fast!         
+Closing DB...
+```
+
+slapd 설정 디렉터리 권한을 변경한다.
+
+```bash
+chown -R ldap:ldap /etc/openldap/slapd.d
+```
+
+### 서버 실행
+
+slapd 서버를 생성한다.
+
+```bash
+systemctl start slapd
+systemctl enable slapd
+systemctl status slapd.service -l
+```
+
+### 디렉터리 정보 확인
+
+consumer 서버에 로컬로 접속
+
+```bash
+ldapsearch -x -W -D "cn=manager,ou=admins,dc=example,dc=com" objectClass=* -b dc=example,dc=com -Z
+```
+
+Consumer 설정에 따라 제한된 필요한 정보만 볼 수도 있다.
+
+```bash
+# example.com
+dn: dc=example,dc=com
+objectClass: top
+objectClass: domain
+
+# admins, example.com
+dn: ou=admins,dc=example,dc=com
+objectClass: organizationalUnit
+
+# manager, admins, example.com
+dn: cn=manager,ou=admins,dc=example,dc=com
+objectClass: organizationalRole
+cn: manager
+
+# replicator, admins, example.com
+dn: cn=replicator,ou=admins,dc=example,dc=com
+objectClass: organizationalRole
+cn: replicator
+
+# people, example.com
+dn: ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+
+# group, example.com
+dn: ou=group,dc=example,dc=com
+objectClass: organizationalUnit
+
+# Keanu Reeves, people, example.com
+dn: cn=Keanu Reeves,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: posixAccount
+objectClass: inetOrgPerson
+cn: Keanu Reeves
+givenName: Keanu
+```
