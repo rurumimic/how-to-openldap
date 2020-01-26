@@ -10,7 +10,7 @@ OpenLDAP 서버를 구축하는 방법
 - Delta-syncrepl
 - TLS
 
-### [OpenLDAP 서버 이중화 구축 및 TLS 보안 통신 방법](docs/design.md)
+### [OpenLDAP 서버 이중화 구축 및 TLS 보안 통신 방법](docs/README.md)
 
 - [Servers](docs/design.md/#servers)
 - [공통 설정](docs/design.md/#%ea%b3%b5%ed%86%b5-%ec%84%a4%ec%a0%95)
