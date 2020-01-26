@@ -35,7 +35,6 @@ hostnamectl set-hostname ldap1
 
 나머지 서버들도 `/etc/hosts`를 설정한다.
 
-
 ---
 
 ## 패키지 설치
@@ -107,7 +106,7 @@ cat > /etc/logrotate.d/slapd << EOF
 /var/log/slapd/slapd.log {
     compress
     copytruncate
-    create 0644 root root
+    create 0600 root root
     daily
     dateext
     notifempty
