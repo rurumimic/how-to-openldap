@@ -106,9 +106,10 @@ rsyslog가 생성한 로그를 백업한다.
 cat > /etc/logrotate.d/slapd << EOF
 /var/log/slapd/slapd.log {
     compress
+    copytruncate
     create 0644 root root
     daily
-    dateformat
+    dateext
     notifempty
     maxage 31
     missingok
