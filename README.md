@@ -1,15 +1,35 @@
 # How to OpenLDAP
 
-- [OpenLDAP](https://www.openldap.org/): 공식 홈페이지
-- [Documentation](https://www.openldap.org/doc/): 문서
-  - [2.4 Administrator's Guide](https://www.openldap.org/doc/admin24/): 설치, 환경설정, 사용법 등
-- [Manual Pages](https://www.openldap.org/software/man.cgi): 설정 파일 옵션, 명령어 옵션 등
-- [Faq-O-Matic](http://www.openldap.org/faq/data/cache/1.html): 자주 묻는 질문
-- [Mirror Repository](https://github.com/openldap/openldap): GitHub 레포지터리
+OpenLDAP 서버를 구축하는 방법
+
+---
+
+## Architectures
+
+### Design 1
+
+- MirrorMode
+- Delta-syncrepl
+- TLS
+
+[OpenLDAP 서버 이중화 구축 및 TLS 보안 통신 방법](design.md)
+
+### Design 2
+
+- MirrorMode
+- Delta-syncrepl
+- SASL GSSAPI
+- Kerberos V
+
+Kerberos를 사용하는 아키텍처는 다음 GitHub를 확인한다.
+
+작성 중: How to LDAP with Kerberos V
 
 ---
 
 ## Cases: 경우의 수
+
+OpenLDAP을 활용하여 구축하는 방법은 여러 가지가 있다.
 
 ### Provider & Consumer
 
@@ -49,23 +69,14 @@ TLS 통신이나 `ldapi:///` 유닉스 도메인 소켓 통신을 할 때는 EXT
 
 ---
 
-## Architecture 1
+## Links
 
-- MirrorMode
-- Delta-syncrepl
-- TLS
-
-Go to [LDAP Service Architecture Design](src)
-
----
-
-## Architecture 2
-
-- MirrorMode
-- Delta-syncrepl
-- SASL GSSAPI
-
-작성 중: How to LDAP with Kerberos V
+- [OpenLDAP](https://www.openldap.org/): 공식 홈페이지
+- [Documentation](https://www.openldap.org/doc/): 문서
+  - [2.4 Administrator's Guide](https://www.openldap.org/doc/admin24/): 설치, 환경설정, 사용법 등
+- [Manual Pages](https://www.openldap.org/software/man.cgi): 설정 파일 옵션, 명령어 옵션 등
+- [Faq-O-Matic](http://www.openldap.org/faq/data/cache/1.html): 자주 묻는 질문
+- [Mirror Repository](https://github.com/openldap/openldap): GitHub 레포지터리
 
 ---
 
