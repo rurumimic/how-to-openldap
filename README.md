@@ -23,7 +23,7 @@ OpenLDAP 서버를 구축하는 방법
 
 Kerberos를 사용하는 아키텍처는 다음 GitHub를 확인한다.
 
-작성 중: How to LDAP with Kerberos V
+[OpenLDAP과 Kerberos V 연동](https://github.com/rurumimic/how-to-openldap-with-kerberos-v)
 
 ---
 

@@ -1,6 +1,6 @@
-# Provder 1 서버 설정
+# Provider 1 서버 설정
 
-- [Provder 1 서버 설정](#provder-1-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
+- [Provider 1 서버 설정](#provider-1-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
   - [관리자 비밀번호 생성](#%ea%b4%80%eb%a6%ac%ec%9e%90-%eb%b9%84%eb%b0%80%eb%b2%88%ed%98%b8-%ec%83%9d%ec%84%b1)
   - [LDIF 작성](#ldif-%ec%9e%91%ec%84%b1)
   - [설정 적용](#%ec%84%a4%ec%a0%95-%ec%a0%81%ec%9a%a9)

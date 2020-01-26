@@ -7,7 +7,7 @@
   - [공통 설정](#%ea%b3%b5%ed%86%b5-%ec%84%a4%ec%a0%95)
   - [인증서](#%ec%9d%b8%ec%a6%9d%ec%84%9c)
   - [클라이언트 설정](#%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%84%a4%ec%a0%95)
-  - [Provder 1 서버 설정](#provder-1-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
+  - [Provider 1 서버 설정](#provider-1-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
   - [Provider 2 서버 설정](#provider-2-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
   - [Delta-Syncrepl 테스트](#delta-syncrepl-%ed%85%8c%ec%8a%a4%ed%8a%b8)
   - [phpLDAPadmin](#phpldapadmin)
@@ -84,7 +84,7 @@ vagrant ssh consumer # consumer
 
 ---
 
-## Provder 1 서버 설정
+## Provider 1 서버 설정
 
 - [관리자 비밀번호 생성](provider-1.md/#%ea%b4%80%eb%a6%ac%ec%9e%90-%eb%b9%84%eb%b0%80%eb%b2%88%ed%98%b8-%ec%83%9d%ec%84%b1)
 - [LDIF 작성](provider-1.md/#ldif-%ec%9e%91%ec%84%b1)
@@ -125,9 +125,9 @@ vagrant ssh consumer # consumer
 ## LDAP 데이터 확인 방법
 
 - [관리자 DN으로 로컬 서버 TLS 접속하는 명령어](commands.md/#%ea%b4%80%eb%a6%ac%ec%9e%90-dn%ec%9c%bc%eb%a1%9c-%eb%a1%9c%ec%bb%ac-%ec%84%9c%eb%b2%84-tls-%ec%a0%91%ec%86%8d%ed%95%98%eb%8a%94-%eb%aa%85%eb%a0%b9%ec%96%b4)
-- [ldapi 프로토콜과 관리자 DN으로 로컬 서버 TLS 접속하는 명령어.](commands.md/#ldapi-%ed%94%84%eb%a1%9c%ed%86%a0%ec%bd%9c%ea%b3%bc-%ea%b4%80%eb%a6%ac%ec%9e%90-dn%ec%9c%bc%eb%a1%9c-%eb%a1%9c%ec%bb%ac-%ec%84%9c%eb%b2%84-tls-%ec%a0%91%ec%86%8d%ed%95%98%eb%8a%94-%eb%aa%85%eb%a0%b9%ec%96%b4)
-- [ldap 프로토콜과 관리자 DN으로 로컬 서버 TLS 접속하는 명령어.](commands.md/#ldap-%ed%94%84%eb%a1%9c%ed%86%a0%ec%bd%9c%ea%b3%bc-%ea%b4%80%eb%a6%ac%ec%9e%90-dn%ec%9c%bc%eb%a1%9c-%eb%a1%9c%ec%bb%ac-%ec%84%9c%eb%b2%84-tls-%ec%a0%91%ec%86%8d%ed%95%98%eb%8a%94-%eb%aa%85%eb%a0%b9%ec%96%b4)
-- [접속할 서버 지정 후 관리자 DN으로 TLS 접속하는 명령어.](commands.md/#%ec%a0%91%ec%86%8d%ed%95%a0-%ec%84%9c%eb%b2%84-%ec%a7%80%ec%a0%95-%ed%9b%84-%ea%b4%80%eb%a6%ac%ec%9e%90-dn%ec%9c%bc%eb%a1%9c-tls-%ec%a0%91%ec%86%8d%ed%95%98%eb%8a%94-%eb%aa%85%eb%a0%b9%ec%96%b4)
+- [ldapi 프로토콜과 관리자 DN으로 로컬 서버 TLS 접속하는 명령어](commands.md/#ldapi-%ed%94%84%eb%a1%9c%ed%86%a0%ec%bd%9c%ea%b3%bc-%ea%b4%80%eb%a6%ac%ec%9e%90-dn%ec%9c%bc%eb%a1%9c-%eb%a1%9c%ec%bb%ac-%ec%84%9c%eb%b2%84-tls-%ec%a0%91%ec%86%8d%ed%95%98%eb%8a%94-%eb%aa%85%eb%a0%b9%ec%96%b4)
+- [ldap 프로토콜과 관리자 DN으로 로컬 서버 TLS 접속하는 명령어](commands.md/#ldap-%ed%94%84%eb%a1%9c%ed%86%a0%ec%bd%9c%ea%b3%bc-%ea%b4%80%eb%a6%ac%ec%9e%90-dn%ec%9c%bc%eb%a1%9c-%eb%a1%9c%ec%bb%ac-%ec%84%9c%eb%b2%84-tls-%ec%a0%91%ec%86%8d%ed%95%98%eb%8a%94-%eb%aa%85%eb%a0%b9%ec%96%b4)
+- [접속할 서버 지정 후 관리자 DN으로 TLS 접속하는 명령어](commands.md/#%ec%a0%91%ec%86%8d%ed%95%a0-%ec%84%9c%eb%b2%84-%ec%a7%80%ec%a0%95-%ed%9b%84-%ea%b4%80%eb%a6%ac%ec%9e%90-dn%ec%9c%bc%eb%a1%9c-tls-%ec%a0%91%ec%86%8d%ed%95%98%eb%8a%94-%eb%aa%85%eb%a0%b9%ec%96%b4)
 - [`uid=keanu`을 검색하는 명령어](commands.md/#uidkeanu%ec%9d%84-%ea%b2%80%ec%83%89%ed%95%98%eb%8a%94-%eb%aa%85%eb%a0%b9%ec%96%b4)
 
 ---
