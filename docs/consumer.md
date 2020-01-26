@@ -10,7 +10,7 @@
 
 ## LDIF 작성
 
-서버 설정 LDIF: [consumer.ldif](src/consumer.ldif)
+서버 설정 LDIF: [consumer.ldif](/src/consumer.ldif)
 
 ---
 

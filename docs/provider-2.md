@@ -10,7 +10,7 @@
 
 ## LDIF 작성
 
-서버 설정 LDIF: [slapd2.ldif](src/slapd2.ldif)
+서버 설정 LDIF: [slapd2.ldif](/src/slapd2.ldif)
 
 ---
 

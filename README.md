@@ -10,19 +10,19 @@ OpenLDAP 서버를 구축하는 방법
 - Delta-syncrepl
 - TLS
 
-### [OpenLDAP 서버 이중화 구축 및 TLS 보안 통신 방법](design.md)
+### [OpenLDAP 서버 이중화 구축 및 TLS 보안 통신 방법](docs/design.md)
 
-- [Servers](design.md/#servers)
-- [공통 설정](design.md/#%ea%b3%b5%ed%86%b5-%ec%84%a4%ec%a0%95)
-- [인증서](design.md/#%ec%9d%b8%ec%a6%9d%ec%84%9c)
-- [클라이언트 설정](design.md/#%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%84%a4%ec%a0%95)
-- [Provider 1 서버 설정](design.md/#provider-1-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
-- [Provider 2 서버 설정](design.md/#provider-2-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
-- [Delta-Syncrepl 테스트](design.md/#delta-syncrepl-%ed%85%8c%ec%8a%a4%ed%8a%b8)
-- [phpLDAPadmin](design.md/#phpldapadmin)
-- [LDAP 데이터 확인 방법](design.md/#ldap-%eb%8d%b0%ec%9d%b4%ed%84%b0-%ed%99%95%ec%9d%b8-%eb%b0%a9%eb%b2%95)
-- [백업](design.md/#%eb%b0%b1%ec%97%85)
-- [Consumer 서버 설정](design.md/#consumer-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
+- [Servers](docs/design.md/#servers)
+- [공통 설정](docs/design.md/#%ea%b3%b5%ed%86%b5-%ec%84%a4%ec%a0%95)
+- [인증서](docs/design.md/#%ec%9d%b8%ec%a6%9d%ec%84%9c)
+- [클라이언트 설정](docs/design.md/#%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%84%a4%ec%a0%95)
+- [Provider 1 서버 설정](docs/design.md/#provider-1-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
+- [Provider 2 서버 설정](docs/design.md/#provider-2-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
+- [Delta-Syncrepl 테스트](docs/design.md/#delta-syncrepl-%ed%85%8c%ec%8a%a4%ed%8a%b8)
+- [phpLDAPadmin](docs/design.md/#phpldapadmin)
+- [LDAP 데이터 확인 방법](docs/design.md/#ldap-%eb%8d%b0%ec%9d%b4%ed%84%b0-%ed%99%95%ec%9d%b8-%eb%b0%a9%eb%b2%95)
+- [백업](docs/design.md/#%eb%b0%b1%ec%97%85)
+- [Consumer 서버 설정](docs/design.md/#consumer-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
 
 ---
 

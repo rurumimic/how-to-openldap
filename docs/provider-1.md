@@ -26,9 +26,9 @@ python -c 'import sys, crypt; print("{CRYPT}" + crypt.crypt(sys.argv[1], crypt.m
 
 ## LDIF 작성
 
-1. 서버 설정 LDIF: [slapd1.ldif](src/slapd1.ldif)
+1. 서버 설정 LDIF: [slapd1.ldif](/src/slapd1.ldif)
    - 관리자 비밀번호를 *olcRootPW*의 값으로 넣는다.
-2. 기본 디렉터리 정보 설정 LDIF: [directories.ldif](src/directories.ldif)
+2. 기본 디렉터리 정보 설정 LDIF: [directories.ldif](/src/directories.ldif)
 
 ---
 

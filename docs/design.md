@@ -37,7 +37,7 @@
 
 ## Vagrant
 
-[Vagrantfile](src/Vagrantfile)
+[Vagrantfile](/src/Vagrantfile)
 
 **서버 시작/종료**
 
