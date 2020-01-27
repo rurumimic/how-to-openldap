@@ -85,7 +85,7 @@ mkdir /var/log/slapd
 slapd의 로그를 수집한다.
 
 ```bash
-cat > /etc/rsyslog.d/slapd.conf << EOF
+cat > /etc/rsyslog.d/slapd.conf << \EOF
 $template slapdtmpl,"[%$DAY%-%$MONTH%-%$YEAR% %timegenerated:12:19:date-rfc3339%] %app-name% %syslogseverity-text% %msg%\n"
 local4.*    /var/log/slapd/slapd.log;slapdtmpl
 EOF
