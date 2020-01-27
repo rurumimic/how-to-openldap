@@ -30,6 +30,7 @@ OpenLDAP 서버를 구축하는 방법
 
 - MirrorMode
 - Delta-syncrepl
+- TLS
 - SASL GSSAPI
 - Kerberos V
 
