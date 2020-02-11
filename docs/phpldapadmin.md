@@ -64,3 +64,40 @@ systemctl status httpd
 
 - User Name: `cn=manager,ou=admins,dc=example,dc=com`
 - Password: 관리자 비밀번호
+
+---
+
+## 기타 설정
+
+### DN 설정: UID
+
+기본 DN 설정은 CN으로 되어있다. UID로 바꿀 수 있다.
+
+```bash
+vi /usr/share/phpldapadmin/templates/creation/
+```
+
+9번째 줄을 변경한다.
+
+```xml
+<rdn>uid</rdn>
+```
+
+### Crypt
+
+```bash
+vi /usr/share/phpldapadmin/lib/functions.php
+```
+
+2150번째 줄을 다음과 같이 변경한다. `$5$`는 `SHA-256`을 의미한다.
+
+```php
+case 'crypt':
+  if ($_SESSION[APPCONFIG]->getValue('password', 'no_random_crypt_salt'))
+    $new_value = sprintf('{CRYPT}%s',crypt($password_clear,substr($password_clear,0,2)));
+  else
+    $salt = substr(str_replace('+','.',base64_encode(md5(mt_rand(), true))),0,16);
+    $new_value = sprintf('{CRYPT}%s', crypt($password_clear, sprintf('$5$%s$', $salt)));
+  break;
+```
+
