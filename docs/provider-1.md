@@ -7,6 +7,7 @@
   - [서버 실행](#%ec%84%9c%eb%b2%84-%ec%8b%a4%ed%96%89)
   - [디렉터리 정보 초기화](#%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%ec%a0%95%eb%b3%b4-%ec%b4%88%ea%b8%b0%ed%99%94)
     - [디렉터리 정보 확인](#%eb%94%94%eb%a0%89%ed%84%b0%eb%a6%ac-%ec%a0%95%eb%b3%b4-%ed%99%95%ec%9d%b8)
+  - [포트 변경](#포트-변경)
 
 ---
 
@@ -179,3 +180,18 @@ dn: ou=group,dc=example,dc=com
 objectClass: organizationalUnit
 ou: group
 ```
+
+---
+
+## 포트 변경
+
+```bash
+vi /etc/sysconfig/slapd
+```
+
+```bash
+SLAPD_URLS="ldapi:/// ldap://<HOST_NAME>:9898"
+```
+
+변경 내용을 SLAPD.LDIF 파일에도 반영한다
+
