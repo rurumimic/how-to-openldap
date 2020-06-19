@@ -64,10 +64,12 @@ systemctl status httpd
 
 ## phpLDAPadmin 접속
 
-브라우저로 [192.168.9.101/phpldapadmin](http://192.168.9.101/phpldapadmin)에 접속한다.
+브라우저로 [192.168.9.101/phpldapadmin](http://192.168.9.101/phpldapadmin) 혹은 `192.168.9.101/ldapadmin` 에 접속한다.
 
 - User Name: `cn=manager,ou=admins,dc=example,dc=com`
 - Password: 관리자 비밀번호
+
+URL 수정: `/phpldapadmin`, `ldapadmin`은 아파치 httpd 설정에서 변경할 수 있다.
 
 ---
 
@@ -78,7 +80,7 @@ systemctl status httpd
 기본 DN 설정은 CN으로 되어있다. UID로 바꿀 수 있다.
 
 ```bash
-vi /usr/share/phpldapadmin/templates/creation/
+vi /usr/share/phpldapadmin/templates/creation/posixAccount.xml
 ```
 
 9번째 줄을 변경한다.
