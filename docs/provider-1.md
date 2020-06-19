@@ -2,6 +2,7 @@
 
 - [Provider 1 서버 설정](#provider-1-%ec%84%9c%eb%b2%84-%ec%84%a4%ec%a0%95)
   - [관리자 비밀번호 생성](#%ea%b4%80%eb%a6%ac%ec%9e%90-%eb%b9%84%eb%b0%80%eb%b2%88%ed%98%b8-%ec%83%9d%ec%84%b1)
+    - [관리자 비밀번호 변경](#관리자-비밀번호-변경)
   - [LDIF 작성](#ldif-%ec%9e%91%ec%84%b1)
   - [설정 적용](#%ec%84%a4%ec%a0%95-%ec%a0%81%ec%9a%a9)
   - [서버 실행](#%ec%84%9c%eb%b2%84-%ec%8b%a4%ed%96%89)
@@ -22,6 +23,31 @@ python -c 'import sys, crypt; print("{CRYPT}" + crypt.crypt(sys.argv[1], crypt.m
 비밀번호를 기록한다.
 
 `{CRYPT}$5$MTyIW7Nq/1hpAbav$dzp/GM6XreRoU0m7t4iphosNt7ltyOj6Uktg3W4DbbC`
+
+### 관리자 비밀번호 변경
+
+만약 LDAP 서버 설정이 모두 끝난 뒤 관리자 비밀번호를 바꾸고 싶다면 다음과 같이 바꾸면 된다.
+
+LDIF 파일 작성:
+
+```bash
+dn: olcDatabase={3}mdb,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: {CRYPT}$5$koZWaNA4iMlyUFL6$.A6QX8ku./OwZSzWO5gOJX5dapxYs8XuDa8iXwqcO.A
+```
+
+비밀번호 변경:
+
+```bash
+ldapmodify -Y EXTERNAL -H ldapi:/// -f modify.ldif
+```
+
+비밀번호 변경 확인:
+
+```bash
+ldapsearch -H ldapi:// -LLL -Q -Y EXTERNAL -b "cn=config" "(olcRootDN=*)" dn olcRootDN olcRootPW
+```
 
 ---
 
