@@ -69,7 +69,7 @@ systemctl status httpd
 - User Name: `cn=manager,ou=admins,dc=example,dc=com`
 - Password: 관리자 비밀번호
 
-URL 수정: `/phpldapadmin`, `ldapadmin`은 아파치 httpd 설정에서 변경할 수 있다.
+URL 수정: `/phpldapadmin`, `/ldapadmin`은 아파치 httpd 설정에서 변경할 수 있다.
 
 ---
 
