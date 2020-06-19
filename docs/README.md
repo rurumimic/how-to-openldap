@@ -87,6 +87,7 @@ vagrant ssh consumer # consumer
 ## Provider 1 서버 설정
 
 - [관리자 비밀번호 생성](provider-1.md/#%ea%b4%80%eb%a6%ac%ec%9e%90-%eb%b9%84%eb%b0%80%eb%b2%88%ed%98%b8-%ec%83%9d%ec%84%b1)
+  - [관리자 비밀번호 ](provider-1.md/#관리자-비밀번호-변경)
 - [LDIF 작성](provider-1.md/#ldif-%ec%9e%91%ec%84%b1)
 - [설정 적용](provider-1.md/#%ec%84%a4%ec%a0%95-%ec%a0%81%ec%9a%a9)
 - [서버 실행](provider-1.md/#%ec%84%9c%eb%b2%84-%ec%8b%a4%ed%96%89)
